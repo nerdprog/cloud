@@ -1,0 +1,130 @@
+1. mongo atlas account create 
+2.add user and give read write to any database
+3.Create a database, e.g. "todoApp".
+4.Create a collection, e.g. "tasks".
+5. create connection string
+
+6. mkdir backend
+cd backend
+npm init -y
+npm install express mongoose cors
+
+backend
+
+7. server.js 
+
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// MongoDB connection
+mongoose.connect(
+  "YOUR_MONGODB_CONNECTION_STRING",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+).then(() => console.log("MongoDB connected"))
+  .catch(err => console.log(err));
+
+// Task schema
+const taskSchema = new mongoose.Schema({
+  text: String
+});
+
+const Task = mongoose.model("Task", taskSchema);
+
+// Routes
+app.get("/tasks", async (req, res) => {
+  const tasks = await Task.find();
+  res.json(tasks);
+});
+
+app.post("/tasks", async (req, res) => {
+  const newTask = new Task({ text: req.body.text });
+  await newTask.save();
+  res.json(newTask);
+});
+
+app.delete("/tasks/:id", async (req, res) => {
+  await Task.findByIdAndDelete(req.params.id);
+  res.json({ message: "Task deleted" });
+});
+
+app.listen(5000, () => console.log("Server running on port 5000"));
+
+
+frontend
+
+8.npx create-react-app todo-mongodb
+cd todo-mongodb
+npm install axios
+
+
+
+9. src/app.js 
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+function App() {
+  const [task, setTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+
+  const fetchTasks = async () => {
+    const res = await axios.get("http://localhost:5000/tasks");
+    setTasks(res.data);
+  };
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  const handleAddTask = async () => {
+    if (task.trim() === "") return;
+    await axios.post("http://localhost:5000/tasks", { text: task });
+    setTask("");
+    fetchTasks();
+  };
+
+  const handleDeleteTask = async (id) => {
+    await axios.delete(`http://localhost:5000/tasks/${id}`);
+    fetchTasks();
+  };
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>MongoDB To‑Do List</h1>
+
+      <input
+        type="text"
+        value={task}
+        onChange={(e) => setTask(e.target.value)}
+        placeholder="Enter a task"
+      />
+      <button onClick={handleAddTask} style={{ marginLeft: "10px" }}>
+        Add
+      </button>
+
+      <ul style={{ marginTop: "20px" }}>
+        {tasks.map((t) => (
+          <li key={t._id}>
+            {t.text}{" "}
+            <button
+              onClick={() => handleDeleteTask(t._id)}
+              style={{ marginLeft: "10px" }}
+            >
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+
+
+10. node server.js ->backend
+npm start ->frontend

@@ -1,0 +1,185 @@
+STEP 1: Create Firebase Project
+
+Go to https://console.firebase.google.com
+
+Click “Add project”
+
+Name it: react-firebase-demo
+
+Disable Google Analytics → Create Project
+
+STEP 2: Enable Authentication
+
+In sidebar → Build → Authentication
+
+Click Get Started
+
+Click Google → enable → Save ✅
+
+STEP 3: Enable Firestore
+
+Sidebar → Build → Firestore Database
+
+Click Create Database
+
+Choose Start in test mode (safe for practice)
+
+Click Enable
+
+STEP 4: Create React App
+
+Open your terminal and run:
+
+npx create-react-app firebase-demo
+cd firebase-demo
+npm install firebase
+
+STEP 5: Get Firebase Config
+
+In your Firebase project dashboard:
+
+Click the “</>” icon (for web)
+
+Register app → Copy the config code (you’ll paste it next)
+
+STEP 6: Add Firebase Setup
+
+Create a new file:
+📁 src/firebase.js
+
+Paste this code:
+
+import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+
+const firebaseConfig = {
+  // paste your firebase config here
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const provider = new GoogleAuthProvider();
+export const db = getFirestore(app);
+
+export { signInWithPopup, signOut };
+
+STEP 7: Add App Logic
+
+Replace your src/App.js with this:
+
+import React, { useState, useEffect } from "react";
+import { auth, provider, signInWithPopup, signOut, db } from "./firebase";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  const login = async () => {
+    const result = await signInWithPopup(auth, provider);
+    setUser(result.user);
+  };
+
+  const logout = () => {
+    signOut(auth);
+    setUser(null);
+  };
+
+  const saveMessage = async () => {
+    await addDoc(collection(db, "messages"), { text: message, user: user.displayName });
+    setMessage("");
+    loadMessages();
+  };
+
+  const loadMessages = async () => {
+    const querySnapshot = await getDocs(collection(db, "messages"));
+    const data = querySnapshot.docs.map(doc => doc.data());
+    setMessages(data);
+  };
+
+  useEffect(() => {
+    loadMessages();
+  }, []);
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h2>🔥 Firebase + React Demo</h2>
+
+      {!user ? (
+        <button onClick={login}>Sign in with Google</button>
+      ) : (
+        <>
+          <p>Welcome, {user.displayName}</p>
+          <button onClick={logout}>Logout</button>
+
+          <div style={{ marginTop: "20px" }}>
+            <input
+              type="text"
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              placeholder="Write something..."
+            />
+            <button onClick={saveMessage}>Save</button>
+          </div>
+
+          <h3>Saved Messages:</h3>
+          <ul>
+            {messages.map((m, i) => (
+              <li key={i}>{m.user}: {m.text}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+STEP 8: Run Locally
+npm start
+
+
+✅ Open http://localhost:3000
+
+✅ Click Sign in with Google
+✅ Type message → click “Save”
+✅ You’ll see it appear in Firestore console under “messages”.
+
+STEP 9: Deploy on Firebase Hosting
+
+Install Firebase tools:
+
+npm install -g firebase-tools
+
+
+Login:
+
+firebase login
+
+
+Initialize project:
+
+firebase init
+
+
+Choose Hosting → select your project → public directory = build → SPA = y
+
+Build and deploy:
+
+npm run build
+firebase deploy
+
+
+You’ll get a live URL like:
+
+https://react-firebase-demo.web.app
+
+🧠 Summary
+Feature	Purpose
+Authentication	Google Sign-in
+Firestore	Store messages { text, user }
+Hosting	Deploy React app live
+Firebase Config	Connects your React app to Firebase

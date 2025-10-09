@@ -1,0 +1,118 @@
+1. open auth 0
+2. login box -> try it out 
+3. then choose regular -> java
+4. view on GitHub follow steps
+5. in terminal 
+npx create-react-app todo-auth0
+cd todo-auth0
+6.npm install @auth0/auth0-react
+
+7. src/index.js 
+
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { Auth0Provider } from "@auth0/auth0-react";
+
+const domain = "YOUR_AUTH0_DOMAIN";
+const clientId = "YOUR_AUTH0_CLIENT_ID";
+
+ReactDOM.render(
+  <Auth0Provider
+    domain={domain}
+    clientId={clientId}
+    authorizationParams={{ redirect_uri: window.location.origin }}
+  >
+    <App />
+  </Auth0Provider>,
+  document.getElementById("root")
+);
+
+
+src/AuthButtons.js
+
+import React from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+
+export const AuthButtons = () => {
+  const { loginWithRedirect, logout, isAuthenticated } = useAuth0();
+
+  return (
+    <div>
+      {!isAuthenticated && (
+        <button onClick={() => loginWithRedirect()}>Log In</button>
+      )}
+      {isAuthenticated && (
+        <button onClick={() => logout({ returnTo: window.location.origin })}>
+          Log Out
+        </button>
+      )}
+    </div>
+  );
+};
+
+
+  src/app.js 
+import React, { useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { AuthButtons } from "./AuthButtons";
+
+function App() {
+  const { isAuthenticated, user } = useAuth0();
+
+  const [task, setTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+
+  const handleAddTask = () => {
+    if (task.trim() === "") return;
+    setTasks([...tasks, task]);
+    setTask("");
+  };
+
+  const handleDeleteTask = (index) => {
+    const newTasks = tasks.filter((_, i) => i !== index);
+    setTasks(newTasks);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{ padding: "20px" }}>
+        <h1>To‑Do List App</h1>
+        <AuthButtons />
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>{user.name}'s To‑Do List</h1>
+      <AuthButtons />
+
+      <div style={{ marginTop: "20px" }}>
+        <input
+          type="text"
+          value={task}
+          onChange={(e) => setTask(e.target.value)}
+          placeholder="Enter a task"
+        />
+        <button onClick={handleAddTask} style={{ marginLeft: "10px" }}>
+          Add
+        </button>
+      </div>
+
+      <ul style={{ marginTop: "20px" }}>
+        {tasks.map((t, i) => (
+          <li key={i}>
+            {t}{" "}
+            <button onClick={() => handleDeleteTask(i)} style={{ marginLeft: "10px" }}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
+8. npm start 

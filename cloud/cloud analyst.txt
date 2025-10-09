@@ -1,0 +1,12 @@
+cloud analyst:
+
+
+download clouodanalyst for netbeans 
+and netbeans
+
+open netbeans
+open project
+select the cloud analyst 
+play button green colour
+configure simulation-> done
+run simulation

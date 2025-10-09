@@ -1,0 +1,78 @@
+0.npm init -y
+1.npm install express
+2.npm install nodemon
+
+
+
+| Method | URL                                 | Body (if required)             | Description        |
+| ------ | ----------------------------------- | ------------------------------ | ------------------ |
+| GET    | `http://localhost:3000/api/books`   | —                              | List all books     |
+| GET    | `http://localhost:3000/api/books/1` | —                              | Get book with id=1 |
+| POST   | `http://localhost:3000/api/books`   | `{ "title": "New Book" }`      | Add new            |
+| PUT    | `http://localhost:3000/api/books/2` | `{ "title": "Updated Title" }` | Update             |
+| DELETE | `http://localhost:3000/api/books/2` | —                              | Delete             |
+
+
+
+
+third party api:
+
+// funAPIs.js
+// Fetch random joke, motivational quote, and general quote
+// No API keys needed 🚀
+
+// ---------------------------
+// 🎭 JOKE API
+// ---------------------------
+async function getJoke() {
+  try {
+    const res = await fetch('https://official-joke-api.appspot.com/random_joke');
+    const data = await res.json();
+    console.log("🎭 Joke of the Day:");
+    console.log(`${data.setup} — ${data.punchline}`);
+  } catch (err) {
+    console.error("Error fetching joke:", err);
+  }
+}
+
+// ---------------------------
+// 💪 MOTIVATIONAL QUOTE API
+// ---------------------------
+async function getMotivation() {
+  try {
+    const res = await fetch('https://zenquotes.io/api/random');
+    const data = await res.json();
+    console.log("\n💪 Motivational Quote:");
+    console.log(`${data[0].q} — ${data[0].a}`);
+  } catch (err) {
+    console.error("Error fetching motivation:", err);
+  }
+}
+
+// ---------------------------
+// 💡 RANDOM QUOTE API
+// ---------------------------
+async function getQuote() {
+  try {
+    const res = await fetch('https://api.quotable.io/random');
+    const data = await res.json();
+    console.log("\n💡 Random Quote:");
+    console.log(`"${data.content}" — ${data.author}`);
+  } catch (err) {
+    console.error("Error fetching quote:", err);
+  }
+}
+
+// ---------------------------
+// Run all APIs
+// ---------------------------
+(async () => {
+  console.log("🌀 Fetching data from fun APIs...\n");
+  await getJoke();
+  await getMotivation();
+  await getQuote();
+})();
+
+
+
+node funapis.js
