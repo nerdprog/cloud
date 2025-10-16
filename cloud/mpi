@@ -1,0 +1,39 @@
+sudo apt install python3
+Install MPI Environment: sudo apt install -y -qq mpich
+Wait till the installation completes
+Install pip: sudo apt install python3-pip
+Install mpi4py: pip install mpi4py
+gedit example.py
+
+from mpi4py import MPI
+
+comm = MPI.COMM_WORLD
+rank = comm.Get_rank()
+size = comm.Get_size()
+
+print(f"Hello from process {rank} out of {size}")
+
+
+mpirun -np 4 python3 mpi_example.py
+
+opem mp
+
+sudo apt update
+sudo apt install build-essential clang libomp-dev -y
+nano hello_omp.c
+
+#include <stdio.h>
+#include <omp.h>
+
+int main() {
+    #pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+        int nthreads = omp_get_num_threads();
+        printf("Hello from thread %d out of %d threads\n", tid, nthreads);
+    }
+    return 0;
+}
+
+gcc -fopenmp hello_omp.c -o hello_omp
+./hello_omp
