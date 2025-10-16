@@ -1,8 +1,12 @@
 https://commons.apache.org/proper/commons-math/download_math.cgi
+3.6.1
+
+open Eclipse. Select New > Project > Java Projec  
+
+Give name for the project as ‘cloudsim’ and set the location to the path containing
+Cloudsim3.0.3
 
 download-> extract-> properties->external jar 
-
-
 in the top file(org.cloudbus) right click new name resourceallocation.java save
 
 
@@ -110,4 +114,5 @@ indent + indent + cloudlet.getVmId() + indent + indent
 }
 }
 }
+
 }
