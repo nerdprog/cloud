@@ -3,6 +3,11 @@
 3. then choose regular -> java
 4. view on GitHub follow steps
 5. in terminal 
+6.cd 01-login
+7.gradlew clean appRun
+8.src/main/webapp/WEB-INF/web.xml file
+paste auth 0 code
+9. http://localhost:3000/portal/home.
 npx create-react-app todo-auth0
 cd todo-auth0
 6.npm install @auth0/auth0-react
@@ -116,3 +121,4 @@ function App() {
 
 export default App;
 8. npm start 
+
