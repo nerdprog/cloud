@@ -128,3 +128,27 @@ export default App;
 
 10. node server.js ->backend
 npm start ->frontend
+
+
+# Connect
+from pymongo import MongoClient
+col = MongoClient("YOUR_MONGODB_ATLAS_CONNECTION_STRING")["mydb"]["mycollection"]
+
+# 1) Insert One Record
+col.insert_one({"name": "John", "age": 25, "city": "New York"})
+
+# 2) Insert Many Records
+col.insert_many([{"name": "Alice", "age": 30}, {"name": "Bob", "age": 22}])
+
+# 3) List all the Records
+list(col.find())
+
+# 4) List the Particular Record
+col.find_one({"name": "Alice"})
+
+# 5) Update the Record
+col.update_one({"name": "John"}, {"$set": {"age": 26}})
+
+# 6) Delete the Record
+col.delete_one({"name": "Bob"})
+
