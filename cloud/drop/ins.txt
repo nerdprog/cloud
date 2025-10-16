@@ -2,67 +2,44 @@
 2.create app
 3.copy the tokens in settings
 
-4.upload.html
+4.upload.js
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Upload Image to Dropbox</title>
-</head>
-<body style="font-family: Arial; padding: 30px;">
-  <h2>Upload Image to Dropbox</h2>
+const express = require("express");
+const { Dropbox } = require("dropbox");
+const fs = require("fs");
 
-  <input type="file" id="fileInput" accept="image/*">
-  <button id="uploadBtn">Upload</button>
+const app = express();
+const dbx = new Dropbox({ accessToken: "YOUR_DROPBOX_ACCESS_TOKEN" });
 
-  <p id="status"></p>
+const FILE_NAME = "example.txt"; // file in same folder
 
-  <script>
-    // ⚠️ Replace with your real Dropbox access token (for testing only)
-    const ACCESS_TOKEN = "YOUR_DROPBOX_ACCESS_TOKEN";
+fs.readFile(FILE_NAME, (err, contents) => {
+  if (err) throw err;
+  dbx.filesUpload({ path: "/" + FILE_NAME, contents })
+    .then(() => console.log("File uploaded!"))
+    .catch(err => console.error(err));
+});
 
-    document.getElementById("uploadBtn").addEventListener("click", async () => {
-      const fileInput = document.getElementById("fileInput");
-      const status = document.getElementById("status");
+app.listen(3000, () => console.log("Running..."));
 
-      if (!fileInput.files.length) {
-        status.textContent = "Please select a file first.";
-        return;
-      }
 
-      const file = fileInput.files[0];
-      status.textContent = "Uploading...";
+download,js
 
-      try {
-        const res = await fetch("https://content.dropboxapi.com/2/files/upload", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + ACCESS_TOKEN,
-            "Dropbox-API-Arg": JSON.stringify({
-              path: "/" + file.name,
-              mode: "add",
-              autorename: true,
-              mute: false
-            }),
-            "Content-Type": "application/octet-stream"
-          },
-          body: file
-        });
+const express = require("express");
+const { Dropbox } = require("dropbox");
+const fs = require("fs");
 
-        if (res.ok) {
-          const data = await res.json();
-          status.textContent = "✅ Upload successful: " + data.name;
-        } else {
-          const err = await res.text();
-          status.textContent = "❌ Upload failed: " + err;
-        }
-      } catch (error) {
-        status.textContent = "Error: " + error.message;
-      }
-    });
-  </script>
-</body>
-</html>
+const app = express();
+const dbx = new Dropbox({ accessToken: "YOUR_DROPBOX_ACCESS_TOKEN" });
 
+const FILE_NAME = "example.txt"; // file to download from Dropbox
+
+dbx.filesDownload({ path: "/" + FILE_NAME })
+  .then(res => {
+    fs.writeFileSync(FILE_NAME, res.result.fileBinary, "binary");
+    console.log("File downloaded!");
+  })
+  .catch(err => console.error(err));
+
+app.listen(3000, () => console.log("Running..."));
